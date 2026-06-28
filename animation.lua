@@ -3,14 +3,14 @@ function add_float_anim(obj)
 		up = 1
 	end
 
-	anim = obj.anims[obj.anim]
+	anim = obj.anims[obj.state]
 	up = (up + flr((time() * anim.spd) % #anim.frames)) * -1
 	obj.y += up
 end
 
 
 function spr_animated(obj)
-	anim = obj.anims[obj.anim]
+	anim = obj.anims[obj.state]
 	-- NOTE: #array => size of the array
 	frame = flr((time() * anim.spd) % #anim.frames) + 1
 

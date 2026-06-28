@@ -14,11 +14,14 @@ function init_player()
 		w=16,
 		h=16,
 		flip=false, -- flip the sprite
-		anim="move", --current animation
 		anims={
-			move={
+			idle={
 				frames={1,3,5}, -- sprites for animation
 				spd=2,
+			},
+			move={
+				frames={1,3,5}, -- sprites for animation
+				spd=5,
 			}
 		},
 		state="idle",
