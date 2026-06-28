@@ -31,15 +31,34 @@ end
 
 
 function move(obj)
+	local diag = obj.dir.x != 0 and obj.dir.y != 0
+
+	-- no direction: idle, and reset phase so the next diagonal starts clean
+	if obj.dir.x == 0 and obj.dir.y == 0 then
+		obj.state = "idle"
+		obj.diag = false
+		return
+	end
+
+	-- entering a diagonal: snap to pixel so the sub-pixel cadence starts in
+	-- phase. invisible -- the sprite is drawn floored anyway.
+	if diag and not obj.diag then
+		obj.x = flr(obj.x)
+		obj.y = flr(obj.y)
+	end
+	obj.diag = diag
+
 	local dx = obj.dir.x * obj.spd.x
 	local dy = obj.dir.y * obj.spd.y
 
-	-- diagonal: scale this frame's step so diagonal speed ~= orthogonal.
+	-- scale the diagonal step so diagonal speed ~= orthogonal.
 	-- applied to the local step, never to obj.spd, so orthogonal keeps full speed.
-	if obj.dir.x != 0 and obj.dir.y != 0 then
+	if diag then
 		dx *= 0.7
 		dy *= 0.7
 	end
+
+	obj.state = "move"
 
 	-- only advance if the destination tiles aren't flagged solid
 	if (collide(obj, 0, 'flag', dx, dy)) return
@@ -48,36 +67,22 @@ function move(obj)
 	obj.y += dy
 end
 
-function check_inputs()
-	press_dir=0
-	p.dir.x=0
-	p.dir.y=0
+function check_inputs(obj)
+	obj.dir.x=0
+	obj.dir.y=0
 
 	if btn(⬅️) then
-		press_dir+=1
-		p.dir.x = -1
-		p.flip=true
+		obj.dir.x=-1
+		obj.flip=true
 	end
 	if btn(➡️) then
-		press_dir+=1
-		p.dir.x= 1
-		p.flip=false
+		obj.dir.x=1
+		obj.flip=false
 	end
-	if  btn(⬆️) then
-		press_dir+=1
-		p.dir.y=-1
+	if btn(⬆️) then
+		obj.dir.y=-1
 	end
 	if btn(⬇️) then
-		press_dir+=1
-		p.dir.y=1
+		obj.dir.y=1
 	end
-
-	-- snap to pixel when entering a diagonal so the sub-pixel cadence always
-	-- starts in the same phase. invisible: the sprite is drawn floored anyway.
-	local diag = p.dir.x != 0 and p.dir.y != 0
-	if diag and not p.diag then
-		p.x = flr(p.x)
-		p.y = flr(p.y)
-	end
-	p.diag = diag
 end
