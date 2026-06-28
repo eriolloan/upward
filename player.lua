@@ -24,6 +24,7 @@ function init_player()
 				spd=5,
 			}
 		},
+		col = {6, 5, 9, 5, 2, 14, 13, 14},
 		state="idle",
 		diag=false, -- true while moving diagonally, for phase-snap detection
 	}
