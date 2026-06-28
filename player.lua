@@ -1,42 +1,60 @@
 function init_player()
-
-	player={
+	p={
 		x=55,
 		y=55,
-		x_move_val = 3,
-		y_move_val = 3,
-		sp=1, -- sprite to display
+		spd={
+			x = 1,
+			y = 1,
+		},
+		dir = {
+			x = 0,
+			y = 0,
+		},
+		spr=1, -- sprite to display
 		w=16,
 		h=16,
-		f=false, -- flip the sprite
-		anim="fly", --current animation
+		flip=false, -- flip the sprite
+		anim="move", --current animation
 		anims={
-			fly={
+			move={
 				frames={1,3,5}, -- sprites for animation
 				spd=2,
 			}
-		}
+		},
+		state="idle",
 	}
 end
 
 
-function move_player()
-	local current_x = player.x
-	local current_y = player.y
-	local x_move = player.x_move_val
-	local y_move = player.y_move_val
+function move(obj)
+	local dx = obj.dir.x * obj.spd.x
+	local dy = obj.dir.y * obj.spd.y
 
-	-- update player position
-	-- update offsets from real (0, 0), used to reposition camera
-	-- flips player sprite to reflect direction
-	if (btn(⬅️)) player.x-=x_move cam.offset_x-=x_move player.f=true
-	if (btn(➡️)) player.x+=x_move cam.offset_x+=x_move player.f=false
-	if (btn(⬆️)) player.y-=y_move cam.offset_y-=y_move
-	if (btn(⬇️)) player.y+=y_move cam.offset_y+=y_move
+	-- only advance if the destination tiles aren't flagged solid
+	if (collide(obj, 0, 'flag', dx, dy)) return
 
-	-- prevent further movement when colliding
-	if (collide(player, 0, 'flag')) player.x=current_x player.y=current_y
+	obj.x += dx
+	obj.y += dy
+end
 
-	-- update camera position
-	camera_follow(player)
+function check_inputs()
+	press_dir=false
+	p.dir.x=0
+	p.dir.y=0
+
+	if btn(⬅️) then
+		press_dir=true
+		p.dir.x = -1
+		p.flip=true
+	elseif btn(➡️) then
+		press_dir=true
+		p.dir.x= 1
+		p.flip=false
+	elseif  btn(⬆️) then
+		press_dir=true
+		p.dir.y=-1
+	elseif btn(⬇️) then
+		press_dir=true
+		p.dir.y=1
+	end
 end

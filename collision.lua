@@ -1,9 +1,11 @@
-function collide(o, area_value, area_property)
-	-- infer bounding box from object attributes
-	local x1 = o.x / 8
-	local y1 = o.y / 8
-	local x2 = (o.x + o.w) / 8
-	local y2 = (o.y + o.h) / 8
+function collide(o, area_value, area_property, dx, dy)
+	dx = dx or 0
+	dy = dy or 0
+	-- infer bounding box from object attributes, offset by the requested move
+	local x1 = (o.x + dx) / 8
+	local y1 = (o.y + dy) / 8
+	local x2 = (o.x + dx + o.w) / 8
+	local y2 = (o.y + dy + o.h) / 8
 
 	local function assert(x, y, area_value, area_property)
 		if (area_property == 'flag') then

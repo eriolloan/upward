@@ -1,15 +1,16 @@
-function add_float_anim(object)
+function add_float_anim(obj)
 	if not up then
 		up = 1
 	end
-	anim = object.anims[object.anim]
+
+	anim = obj.anims[obj.anim]
 	up = (up + flr((time() * anim.spd) % #anim.frames)) * -1
-	object.y += up
+	obj.y += up
 end
 
 
-function spr_animated(object)
-  anim = object.anims[object.anim]
+function spr_animated(obj)
+	anim = obj.anims[obj.anim]
 	-- NOTE: #array => size of the array
 	frame = flr((time() * anim.spd) % #anim.frames) + 1
 
@@ -17,5 +18,5 @@ function spr_animated(object)
 		frame = 1
 	end
 
-	spr(anim.frames[frame],object.x, object.y, object.w/8, object.h/8, object.f)
+	spr(anim.frames[frame],obj.x, obj.y, obj.w/8, obj.h/8, obj.flip)
 end
