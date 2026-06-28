@@ -18,7 +18,5 @@ end
 
 function _draw()
 	map()
-	print(p.state, 8, 8, 7)
-
 	spr_animated(p)
 end
