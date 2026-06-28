@@ -13,13 +13,13 @@ function _update60()
 	cls(13)
 
 	check_inputs()
-	if press_dir then
+
+	if press_dir>0 then
 		p.state="move"
 		move(p)
-		return
+	else
+		p.state="idle"
 	end
-
-	p.state="idle"
 end
 
 function _draw()

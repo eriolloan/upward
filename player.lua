@@ -25,6 +25,7 @@ function init_player()
 			}
 		},
 		state="idle",
+		diag=false, -- true while moving diagonally, for phase-snap detection
 	}
 end
 
@@ -32,6 +33,13 @@ end
 function move(obj)
 	local dx = obj.dir.x * obj.spd.x
 	local dy = obj.dir.y * obj.spd.y
+
+	-- diagonal: scale this frame's step so diagonal speed ~= orthogonal.
+	-- applied to the local step, never to obj.spd, so orthogonal keeps full speed.
+	if obj.dir.x != 0 and obj.dir.y != 0 then
+		dx *= 0.7
+		dy *= 0.7
+	end
 
 	-- only advance if the destination tiles aren't flagged solid
 	if (collide(obj, 0, 'flag', dx, dy)) return
@@ -41,23 +49,35 @@ function move(obj)
 end
 
 function check_inputs()
-	press_dir=false
+	press_dir=0
 	p.dir.x=0
 	p.dir.y=0
 
 	if btn(⬅️) then
-		press_dir=true
+		press_dir+=1
 		p.dir.x = -1
 		p.flip=true
-	elseif btn(➡️) then
-		press_dir=true
+	end
+	if btn(➡️) then
+		press_dir+=1
 		p.dir.x= 1
 		p.flip=false
-	elseif  btn(⬆️) then
-		press_dir=true
+	end
+	if  btn(⬆️) then
+		press_dir+=1
 		p.dir.y=-1
-	elseif btn(⬇️) then
-		press_dir=true
+	end
+	if btn(⬇️) then
+		press_dir+=1
 		p.dir.y=1
 	end
+
+	-- snap to pixel when entering a diagonal so the sub-pixel cadence always
+	-- starts in the same phase. invisible: the sprite is drawn floored anyway.
+	local diag = p.dir.x != 0 and p.dir.y != 0
+	if diag and not p.diag then
+		p.x = flr(p.x)
+		p.y = flr(p.y)
+	end
+	p.diag = diag
 end

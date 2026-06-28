@@ -18,5 +18,5 @@ function spr_animated(obj)
 		frame = 1
 	end
 
-	spr(anim.frames[frame],obj.x, obj.y, obj.w/8, obj.h/8, obj.flip)
+	spr(anim.frames[frame], flr(obj.x), flr(obj.y), obj.w/8, obj.h/8, obj.flip)
 end
