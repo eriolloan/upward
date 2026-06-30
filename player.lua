@@ -24,7 +24,7 @@ function init_player()
 				spd=5,
 			}
 		},
-		col = {6, 5, 9, 5, 2, 14, 13, 14},
+		col = {3, 5, 12, 5, 3, 14, 12, 14},
 		state="idle",
 		diag=false, -- true while moving diagonally, for phase-snap detection
 	}
@@ -61,8 +61,39 @@ function move(obj)
 
 	obj.state = "move"
 
-	-- only advance if the destination tiles aren't flagged solid
-	if (collide(obj, 0, 'flag', dx, dy)) return
+	-- destination blocked: honor the move on whichever axis is still free
+	if collide(obj, 0, 'flag', dx, dy) then
+		if obj.diag then
+			-- diagonal slide: drop the component whose own axis is solid
+			local hit_h = collide(obj, 0, 'flag', dx, 0)
+			local hit_v = collide(obj, 0, 'flag', 0, dy)
+			if (hit_h) dx = 0
+			if (hit_v) dy = 0
+			-- pure corner (only the diagonal tile is solid): don't cut it
+			if (not hit_h and not hit_v) return
+		else
+			-- orthogonal block: corner slip — nudge perpendicular to round a corner.
+			-- perpendicular axis = the one we're NOT moving along.
+			local px = (dx == 0) and 1 or 0
+			local py = (dy == 0) and 1 or 0
+
+			-- search outward for the nearest free offset on either side
+			for k=1,4 do
+				for s=-1,1,2 do
+					local ox = px*s*k
+					local oy = py*s*k
+					if not collide(obj, 0, 'flag', dx+ox, dy+oy) then
+						-- keep advancing, plus the perpendicular nudge
+						obj.x += dx+ox
+						obj.y += dy+oy
+						return
+					end
+				end
+			end
+
+			return -- no slip room: hold position
+		end
+	end
 
 	obj.x += dx
 	obj.y += dy
