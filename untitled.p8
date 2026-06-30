@@ -1,7 +1,7 @@
 pico-8 cartridge // http://www.pico-8.com
 version 41
 __lua__
-#include collision.lua
+#include physics.lua
 #include animation.lua
 #include player.lua
 #include main.lua
