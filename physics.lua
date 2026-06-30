@@ -71,15 +71,13 @@ function move(obj)
 			local px = (dx == 0) and 1 or 0
 			local py = (dy == 0) and 1 or 0
 
-			-- search outward for the nearest free offset on either side
-			for k=1,4 do
+			-- search outward for the nearest gap on either side, then ease
+			-- toward it 1px/frame (no forward yet) so the slip looks smooth.
+			for k=1,6 do
 				for s=-1,1,2 do
-					local ox = px*s*k
-					local oy = py*s*k
-					if not solid(obj, dx+ox, dy+oy) then
-						-- keep advancing, plus the perpendicular nudge
-						obj.x += dx+ox
-						obj.y += dy+oy
+					if not solid(obj, dx+px*s*k, dy+py*s*k) then
+						obj.x += px*s -- s is the sign; step a single pixel
+						obj.y += py*s
 						return
 					end
 				end
